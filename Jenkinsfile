@@ -4,31 +4,41 @@ pipeline {
     environment {
         DOCKER_HUB_REPO = 'ahmetozleraktas/simple-flask-app'
         IMAGE_TAG = 'latest'
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub_login')
     }
 
     stages {
-        stage('Build') {
+        stage('SCM Checkout') {
             steps {
                 // Checkout source code from your repository
                 git 'https://github.com/ahmetozleraktas/simple-flask-app.git'
+            }
+            
+            // Build the Docker image
+                
+        }
+        stage('Build Docker image') {
+            steps {
+                sh "docker build -t ${DOCKER_HUB_REPO}:${IMAGE_TAG} ."
+            }
+        }
 
-                // Build the Docker image
-                script {
-                    def dockerImage = docker.build("${DOCKER_HUB_REPO}:${IMAGE_TAG}")
-                }
+        stage('Login to DockerHub') {
+            steps {
+                sh 'echo ${DOCKERHUB_CREDENTIALS_PSW} | docker login -u ${DOCKERHUB_CREDENTIALS_USR} --password-stdin'
             }
         }
 
         stage('Push to DockerHub') {
             steps {
-                // Log in to DockerHub using your credentials (configure DockerHub credentials in Jenkins)
-                script {
-                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_login') {
-                        // Push the Docker image to DockerHub
-                        dockerImage.push("${IMAGE_TAG}")
-                    }
-                }
+                sh "docker push ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
             }
         }
+    }
+}
+
+post {
+    always {
+        sh 'docker logout'
     }
 }
