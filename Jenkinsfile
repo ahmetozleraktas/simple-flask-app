@@ -11,7 +11,7 @@ pipeline {
         stage('SCM Checkout') {
             steps {
                 // Checkout source code from your repository
-                git 'https://github.com/ahmetozleraktas/simple-flask-app.git'
+                sh 'git clone https://github.com/ahmetozleraktas/devops-project-gke.git'
             }
             
             // Build the Docker image

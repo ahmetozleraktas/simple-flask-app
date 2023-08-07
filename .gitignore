@@ -160,3 +160,4 @@ cython_debug/
 #.idea/
 
 # Pipeline test 4
+*.txt
